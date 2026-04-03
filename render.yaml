@@ -1,0 +1,48 @@
+services:
+  # Web service (FastAPI)
+  - type: web
+    name: call-center-api
+    env: python
+    plan: standard  # Need standard for more memory
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: USE_OPENAI_WHISPER_API
+        value: "true"  # Use API on Render (local Whisper needs too much RAM)
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: call-center-redis
+          property: connectionString
+      - key: API_KEY
+        generateValue: true
+
+  # Background worker (Celery)
+  - type: worker
+    name: call-center-worker
+    env: python
+    plan: standard
+    buildCommand: pip install -r requirements.txt
+    startCommand: celery -A app.tasks worker --loglevel=info --concurrency=2
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: USE_OPENAI_WHISPER_API
+        value: "true"
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: call-center-redis
+          property: connectionString
+
+  # Redis for task queue
+  - type: redis
+    name: call-center-redis
+    plan: starter
+    ipAllowList: []
