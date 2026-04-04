@@ -3,208 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Call Center Compliance AI</title>
-    <!-- Modern Font: Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <title>Call Center AI Dashboard</title>
     <link rel="stylesheet" href="styles.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="app-container">
-        <!-- Background Orbs -->
-        <div class="orb orb-1"></div>
-        <div class="orb orb-2"></div>
+    <div class="background-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
 
-        <!-- Header -->
-        <header class="glass-header">
-            <div class="logo">
-                <i data-lucide="audio-lines" class="logo-icon"></i>
-                <h1>Compliance <span>AI</span></h1>
-            </div>
-            <div class="api-status">
-                <span class="status-dot"></span>
-                API Ready
-            </div>
+    <div class="glass-container">
+        <header>
+            <h1><i class="fa-solid fa-headset"></i> Call Compliance Oracle</h1>
+            <p>Upload a call recording and let our AI engine validate SOPs, instantly redact PII, and analyze sentiment.</p>
         </header>
 
         <main>
-            <!-- Hero / Input Section -->
-            <section id="input-section" class="glass-panel slide-up">
-                <div class="section-header">
-                    <h2>Analyze Call Audio</h2>
-                    <p>Powered by state of the art LLMs and Whisper transcription.</p>
+            <div class="upload-section">
+                <div class="file-upload-wrapper" id="drop-zone">
+                    <input type="file" id="audio-file" accept="audio/mp3, audio/mpeg" />
+                    <div class="upload-content">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <h3>Drop your MP3 here</h3>
+                        <p>or click to browse</p>
+                    </div>
                 </div>
                 
-                <form id="analyze-form">
-                    <div class="form-group">
-                        <label for="audio_url">Audio File URL</label>
-                        <div class="input-wrapper">
-                            <i data-lucide="link"></i>
-                            <input type="url" id="audio_url" required placeholder="https://example.com/recording.mp3" value="https://recordings.exotel.com/exotelrecordings/guvi64/5780094ea05a75c867120809da9a199f.mp3">
-                        </div>
+                <div class="controls">
+                    <select id="language" class="glass-input">
+                        <option value="English">English</option>
+                        <option value="Hindi">Hindi / Hinglish</option>
+                        <option value="Tamil">Tamil / Tanglish</option>
+                    </select>
+                    <input type="password" id="api-key" class="glass-input" placeholder="API Secret Key" value="sk_track3_987654321">
+                    <button id="analyze-btn" class="glass-btn"><i class="fa-solid fa-wand-magic-sparkles"></i> Analyze Call</button>
+                </div>
+            </div>
+
+            <div id="loader" class="loader hidden">
+                <div class="spinner"></div>
+                <p>AI is processing the call context...</p>
+            </div>
+
+            <div id="results" class="results-grid hidden">
+                <!-- Score Card -->
+                <div class="card score-card glass-panel">
+                    <h3>Compliance Score</h3>
+                    <div class="score-circle">
+                        <span id="score-text">0%</span>
                     </div>
+                    <p id="adherence-status" class="status-badge">PENDING</p>
+                </div>
 
-                    <div class="form-row">
-                        <div class="form-group flex-1">
-                            <label for="sop_template">SOP Template</label>
-                            <div class="select-wrapper">
-                                <i data-lucide="clipboard-check"></i>
-                                <select id="sop_template">
-                                    <option value="standard">Standard</option>
-                                    <option value="banking">Banking</option>
-                                    <option value="telecom">Telecom</option>
-                                    <option value="insurance">Insurance</option>
-                                    <option value="healthcare">Healthcare</option>
-                                </select>
-                            </div>
-                        </div>
+                <!-- SOP Validation -->
+                <div class="card sop-card glass-panel">
+                    <h3>SOP Checklist</h3>
+                    <ul id="sop-list" class="checklist">
+                        <!-- JS inserted -->
+                    </ul>
+                </div>
 
-                        <div class="form-group toggle-group">
-                            <label for="pii_redact">Redact PII</label>
-                            <label class="switch">
-                                <input type="checkbox" id="pii_redact">
-                                <span class="slider round"></span>
-                            </label>
-                        </div>
+                <!-- Analytics -->
+                <div class="card analytics-card glass-panel">
+                    <h3>Deep Analytics</h3>
+                    <div class="metric">
+                        <span><i class="fa-solid fa-face-smile"></i> Sentiment:</span>
+                        <strong id="sentiment">-</strong>
                     </div>
+                    <div class="metric">
+                        <span><i class="fa-solid fa-money-bill-wave"></i> Payment Pref:</span>
+                        <strong id="payment">-</strong>
+                    </div>
+                    <div class="metric">
+                        <span><i class="fa-solid fa-chart-pie"></i> Talk Ratio:</span>
+                        <strong id="talk-ratio">-</strong>
+                    </div>
+                    <div class="metric">
+                        <span><i class="fa-solid fa-arrow-trend-up"></i> Shift:</span>
+                        <strong id="sentiment-shift">-</strong>
+                    </div>
+                </div>
 
-                    <button type="submit" class="btn primary-btn" id="submit-btn">
-                        <span>Start Analysis</span>
-                        <i data-lucide="sparkles"></i>
-                    </button>
+                <!-- Redacted Transcript -->
+                <div class="card transcript-card glass-panel full-width">
+                    <h3>Redacted Transcript <span class="badge">PII Safe</span></h3>
+                    <div id="transcript-box" class="scroll-box"></div>
                     
-                </form>
-            </section>
-
-            <!-- Loading State -->
-            <section id="loading-section" class="glass-panel hidden">
-                <div class="loader-container">
-                    <div class="spinner"></div>
-                    <h3 id="loading-phase">Processing Audio...</h3>
-                    <p id="loading-subtext">Transcription and semantic analysis running via celery background task.</p>
+                    <h4 class="mt-4">Summary</h4>
+                    <p id="summary-box"></p>
                 </div>
-                <div class="progress-bar-container">
-                    <div class="progress-bar" id="poll-progress"></div>
-                </div>
-            </section>
-
-            <!-- Error State -->
-            <section id="error-section" class="glass-panel hidden danger-border">
-                <div class="error-content">
-                    <div class="error-icon-wrapper">
-                        <i data-lucide="alert-triangle"></i>
-                    </div>
-                    <h3>Analysis Failed</h3>
-                    <p id="error-message">An unknown error occurred.</p>
-                    <button class="btn secondary-btn" onclick="resetUI()">Try Again</button>
-                </div>
-            </section>
-
-            <!-- Results Dashboard -->
-            <section id="results-section" class="hidden slide-up">
-                
-                <!-- Quick Stats Grid -->
-                <div class="stats-grid">
-                    <div class="stat-card glass-panel">
-                        <div class="stat-icon"><i data-lucide="shield-check"></i></div>
-                        <div class="stat-info">
-                            <p class="stat-label">SOP Compliance</p>
-                            <h3 id="res-compliance" class="stat-value">--%</h3>
-                        </div>
-                    </div>
-                    <div class="stat-card glass-panel">
-                        <div class="stat-icon"><i data-lucide="smile"></i></div>
-                        <div class="stat-info">
-                            <p class="stat-label">Sentiment</p>
-                            <h3 id="res-sentiment" class="stat-value text-capitalize">--</h3>
-                        </div>
-                    </div>
-                    <div class="stat-card glass-panel">
-                        <div class="stat-icon"><i data-lucide="bar-chart-2"></i></div>
-                        <div class="stat-info">
-                            <p class="stat-label">Diarization Talk Ratio</p>
-                            <h3 id="res-talk-ratio" class="stat-value">--</h3>
-                        </div>
-                    </div>
-                    <div class="stat-card glass-panel">
-                        <div class="stat-icon"><i data-lucide="clock"></i></div>
-                        <div class="stat-info">
-                            <p class="stat-label">Processing Time</p>
-                            <h3 id="res-duration" class="stat-value">--s</h3>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Tabs -->
-                <div class="tabs glass-panel" id="main-tabs">
-                    <button class="tab-btn active" data-tab="summary">Summary</button>
-                    <button class="tab-btn" data-tab="sop">SOP Validation</button>
-                    <button class="tab-btn" data-tab="transcript">Diarized Transcript</button>
-                    <button class="tab-btn" data-tab="json">Raw JSON Response</button>
-                </div>
-
-                <!-- Tab Contents -->
-                <div class="tab-content glass-panel active" id="tab-summary">
-                    <div class="summary-layout">
-                        <div class="summary-main">
-                            <h3>Executive Summary</h3>
-                            <p id="res-summary-text" class="summary-text loading-pulse">Generating summary...</p>
-
-                            <h3 class="mt-2">Extracted Keywords</h3>
-                            <div id="res-keywords" class="chip-container">
-                                <!-- Chips here -->
-                            </div>
-                        </div>
-                        <div class="summary-sidebar" id="sidebar-insights">
-                            <div class="insight-box pii-box hidden" id="pii-alert">
-                                <h4><i data-lucide="alert-octagon"></i> PII Detected</h4>
-                                <ul id="pii-list"></ul>
-                            </div>
-                            <div class="insight-box payment-box hidden" id="payment-alert">
-                                <h4><i data-lucide="credit-card"></i> Payment Profile</h4>
-                                <div id="payment-details"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="tab-content glass-panel" id="tab-sop">
-                    <div class="sop-header">
-                        <h3>SOP Validation Details</h3>
-                        <span class="badge" id="sop-template-badge">Template</span>
-                    </div>
-                    <div class="sop-checklist" id="res-sop-checklist">
-                        <!-- Dynamically generated SOP items -->
-                    </div>
-                </div>
-
-                <div class="tab-content glass-panel" id="tab-transcript">
-                    <div class="chat-container" id="res-chat">
-                        <!-- Dynamically generated chat messages -->
-                        <div style="padding: 2rem; text-align: center; opacity: 0.5;">No diarization data found or included.</div>
-                    </div>
-                </div>
-
-                <div class="tab-content glass-panel" id="tab-json">
-                    <pre><code id="res-raw-json">Waiting for data...</code></pre>
-                </div>
-                
-                <div class="action-footer mt-2" style="display: flex; justify-content: flex-end; width: 100%;">
-                    <button class="btn secondary-btn" onclick="resetUI()">
-                        <i data-lucide="refresh-cw"></i> Analyze Another Call
-                    </button>
-                </div>
-            </section>
+            </div>
         </main>
     </div>
 
-    <!-- Our JS file -->
-    <script src="app.js"></script>
-    <script>
-        lucide.createIcons();
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
