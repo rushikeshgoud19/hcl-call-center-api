@@ -54,6 +54,42 @@ async def global_exception_handler(request: Request, exc: Exception):
         content={"status": "error", "message": str(exc)}
     )
 
+@app.get("/api/call-analytics")
+async def call_analytics_info():
+    """
+    GET handler — returns a live sample response so visiting the URL in a browser
+    shows the exact output format this API produces.
+    """
+    return {
+        "status": "success",
+        "language": "English",
+        "transcript": "My credit card is [REDACTED]. How do I pay my EMI? Agent: Hello! Thank you for calling. I'm here to help you with your EMI payment. Could you please verify your account details? Customer: Sure, my account number is [REDACTED]. Agent: Thank you for verifying. Your EMI amount of Rs. 5000 is due on the 15th. You can pay via our app, net banking, or visit the branch. Customer: I'll use the app. Agent: Perfect! Is there anything else I can help you with? Customer: No, that's all. Agent: Thank you for calling. Have a great day!",
+        "redacted_transcript": "My credit card is [REDACTED]. How do I pay my EMI? Agent: Hello! Thank you for calling. I'm here to help you with your EMI payment. Could you please verify your account details? Customer: Sure, my account number is [REDACTED]. Agent: Thank you for verifying. Your EMI amount of Rs. 5000 is due on the 15th. You can pay via our app, net banking, or visit the branch. Customer: I'll use the app. Agent: Perfect! Is there anything else I can help you with? Customer: No, that's all. Agent: Thank you for calling. Have a great day!",
+        "summary": "Customer inquired about paying their EMI. Agent greeted the customer, verified their identity, provided payment options (app, net banking, branch), and closed the call professionally.",
+        "sop_validation": {
+            "greeting": True,
+            "identification": True,
+            "problemStatement": True,
+            "solutionOffering": True,
+            "closing": True,
+            "complianceScore": 1.0,
+            "adherenceStatus": "FOLLOWED",
+            "explanation": "All SOP steps were completed: greeting, identity verification, problem acknowledgment, solution offered, and professional closing."
+        },
+        "analytics": {
+            "paymentPreference": "EMI",
+            "rejectionReason": "NONE",
+            "sentiment": "Positive"
+        },
+        "advanced_metrics": {
+            "agent_talk_percent": 60,
+            "customer_talk_percent": 40,
+            "sentiment_shift": "Neutral -> Positive"
+        },
+        "keywords": ["credit card", "EMI payment", "net banking", "account verification", "due date"],
+        "_note": "This is a sample response. To analyze a real call, send a POST request with x-api-key header and a JSON body containing: language (string), audioFormat ('mp3'), and audioBase64 (base64-encoded MP3)."
+    }
+
 @app.post("/api/call-analytics")
 async def analyze_call(request: AudioRequest, _: bool = Depends(verify_api_key)):
     if request.audioFormat.lower() != "mp3":
