@@ -4,7 +4,7 @@ import json
 import base64
 import tempfile
 from fastapi import FastAPI, HTTPException, Depends, Header, Request, Form
-from fastapi.responses import JSONResponse, HTMLResponse
+from fastapi.responses import JSONResponse, HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.exceptions import RequestValidationError
 from pydantic import BaseModel, Field
@@ -20,6 +20,11 @@ app = FastAPI(title="Call Center Compliance API")
 # We mount it AFTER defining dynamic routes so it acts as fallback or specifically mounted
 os.makedirs("frontend", exist_ok=True)
 app.mount("/dashboard", StaticFiles(directory="frontend", html=True), name="frontend")
+
+@app.get("/", include_in_schema=False)
+async def root():
+    """Redirect root to the live demo dashboard"""
+    return RedirectResponse(url="/api/call-analytics")
 
 def get_groq_client():
     api_key = os.environ.get("GROQ_API_KEY")
