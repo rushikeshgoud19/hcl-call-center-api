@@ -67,3 +67,4 @@ aiosqlite==0.19.0
 # Monitoring (Optional)
 # ============================================
 flower==2.0.1
+gtts
