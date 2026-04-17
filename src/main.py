@@ -23,8 +23,8 @@ app.mount("/dashboard", StaticFiles(directory="frontend", html=True), name="fron
 
 @app.get("/", include_in_schema=False)
 async def root():
-    """Redirect root to the live demo dashboard"""
-    return RedirectResponse(url="/api/call-analytics")
+    """Redirect root to the interactive demo dashboard"""
+    return RedirectResponse(url="/dashboard/index.html")
 
 def get_groq_client():
     api_key = os.environ.get("GROQ_API_KEY")
