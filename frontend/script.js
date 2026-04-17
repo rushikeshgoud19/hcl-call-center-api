@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Advanced Metrics safely fallback
         const adv = data.advanced_metrics || {};
-        const agentTalk = adv.agent_talk_percent ? `${adv.agent_talk_percent}% Agent` : 'N/A';
+        const agentTalk = adv.agent_talk_percent !== undefined ? `${adv.agent_talk_percent}% Agent` : 'N/A';
         document.getElementById('talk-ratio').textContent = agentTalk;
         document.getElementById('sentiment-shift').textContent = adv.sentiment_shift || 'Static';
 
